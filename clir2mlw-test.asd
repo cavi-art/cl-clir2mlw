@@ -1,8 +1,8 @@
 (defsystem "clir2mlw-test"
   :description "CLIR2MLW Test Suite"
   :version "0.0.1"
-  :author "Santiago Saavedra <s.saavedra@fdi.ucm.es"
-  :license "Apache 2"
+  :author "Santiago Saavedra <s.saavedra@fdi.ucm.es>"
+  :licence "Apache 2"
   :depends-on ("clir2mlw"
                :prove
                :printv)
