@@ -1,7 +1,47 @@
-# cl-clir2mlw
+clir2mlw
+=========
 CLIR2MLW is a parser which prints CLIR files as WhyML files.
 
-# Requirements
+
+Usage
+=====
+
+You can build an executable file, and then use it as any non-lisp
+console binary. For building it, just type
+
+```bash
+sbcl --load binary.lisp
+```
+
+The binary's current usage is reproduced below. You can get this
+information by executing `./clir2mlw --help`
+
+```text
+./clir2mlw -h
+Usage: clir2mlw [-hvas] [+a] [OPTIONS] FILE ...
+
+A CLIR parser to WhyML.
+Depending on -a, files have to be either pairs CLIR-FILE.CLIR CLIR-FILE.MLW or 
+just a list of CLIR files, and the MLW paths are derived from the original 
+names.
+Options which immediately exit:
+  -h, --help                  Print this help and exit.
+  -v, --version               Print version number and exit.
+Options controlling the output
+  -(+)a, --no-auto-file-name[=yes/no] Choose automatically the file name. If an 
+                              output file is not set, this sets the output file 
+                              to the same as the input file, except the 
+                              extension is replaced. Otherwise, the output is 
+                              sent to stdout.
+                              Fallback: yes
+  -s, --to-stdout             Send the output of all files to stdout.
+  --override-output-extension=STR Override the extension to save files with
+                              Fallback: mlw
+```
+
+Requirements
+============
+
 - You need a Common Lisp runtime. (I only tested this with SBCL at the moment)
 
 CLIR2MLW uses qlot for managing dependencies, so you need quicklisp
@@ -53,36 +93,31 @@ Once you have Roswell installed, just type in your shell:
 ros install qlot
 ```
 
-# Usage
-
-You can build an executable file, and then use it as any non-lisp
-console binary. For building it, just type
-
-```bash
-sbcl --load binary.lisp
-```
-
-The binary's current usage is reproduced below. You can get this
-information by executing `./clir2mlw --help`
-
-```
-Usage: clir2mlw [-hva] [+a] [OPTIONS] FILE
-
-A CLIR parser to WhyML.
-Options which immediately exit:
-  -h, --help                  Print this help and exit.
-  -v, --version               Print version number and exit.
-Options controlling the output
-  -(+)a, --no-auto-file-name[=yes/no] Choose automatically the file name. If an 
-                              output file is not set, this sets the output file 
-                              to the same as the input file, except the 
-                              extension is replaced. Otherwise, the output is 
-                              sent to stdout.
-                              Fallback: yes
-  --override-output-extension=STR Override the extension to save files with
-                              Fallback: mlw
-```
-
-
 [qlot]: https://github.com/fukamachi/qlot
 [ros]: https://github.com/roswell/roswell
+
+
+
+Contributing
+============
+
+This project encourages the [GitHub Flow][flow] for external
+contributions. Please send any improvements you may find via GitHub a
+Pull Request. You can also send them by email or any other means, and
+they will end up being integrated here.
+
+By sending a Pull Request you agree to publish your own code under the same 
+license as the one stated in the repository.
+
+  [flow]: https://guides.github.com/introduction/flow/
+
+Acknowledgements
+================
+
+This work is partially supported by
+the Spanish MINECO project CAVI-ART (TIN2013-44742-C4-3-R),
+Madrid regional project N-GREENS Software-CM (S2013/ICE-2731) and
+UCM grant GR3/14-910502.
+
+CAVI-ART stands for Computer Assisted ValIdation by Analysis, 
+tRansformation and Testing.
