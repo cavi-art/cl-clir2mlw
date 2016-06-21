@@ -18,22 +18,28 @@
 ;;; You should have received a copy of the GNU Affero General Public License
 ;;; along with CAVIART-VCGEN.  If not, see <http://www.gnu.org/licenses/>.
 
-
+(cl:require 'asdf)
 (cl:in-package :cl-user)
-(require "asdf")
-(push (directory-namestring *load-pathname*) asdf:*central-registry*)
-
 (defpackage :ir.mlw.load
-  (:use :cl))
-
+  (:use :cl :asdf))
 (cl:in-package :ir.mlw.load)
-(eval-when (:compile-toplevel :load-toplevel)
-  (ql:quickload 'qlot))
 
+(unless (find-package :ql)
+  (format *error-output* "ERROR: We need QuickLisp already installed
+  on your lisp environment to work."))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (ql:quickload :qlot))
+
+(load "clir2mlw.asd")
+(load "clir2mlw-test.asd")
+
+;; Check that dependencies are installed
 (qlot:install 'clir2mlw)
 (qlot:quickload 'clir2mlw)
 
-
-;; When testing
+;;; When testing
 (asdf:test-system 'clir2mlw-test)
+
+
 
