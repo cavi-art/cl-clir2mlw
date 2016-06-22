@@ -32,13 +32,13 @@
   (ql:quickload :qlot))
 
 (load "clir2mlw.asd")
-(load "clir2mlw-test.asd")
 
 ;; Check that dependencies are installed
 (qlot:install 'clir2mlw)
 (qlot:quickload 'clir2mlw)
 
 ;;; When testing
+(load "clir2mlw-test.asd")
 (asdf:test-system 'clir2mlw-test)
 
 
