@@ -117,10 +117,10 @@
 
 (defun handle-function-definitions% (function-list body)
   (let ((first-function (apply #'handle-function-definition% (first function-list)))
-        (rest-functions (mapcar (lambda (f) (apply #'handle-function-definition%% "and" f))
+        (rest-functions (mapcar (lambda (f) (apply #'handle-function-definition%% "with" f))
                                 (rest function-list))))
     (format nil
-            "~@<~4:I~{~(~A~)~^~:@_~}~:@_in~:@_~A~:>"
+            "~@<~4:I~{~A~^~:@_~}~:@_in~:@_~A~:>"
             (cons first-function rest-functions)
             (clir->mlw body))))
 
@@ -141,11 +141,13 @@
 
 (defun handle-function-definition%% (let-name function-name typed-lambda-list typed-result-list &rest body)
   (with-assertions ((pre post) body)
-    (let ((recursive? "rec"))
+    (let ((let-name (if (string-equal let-name "let")
+                        "let rec"
+                        let-name)))
       (format nil
               (concatenate
                'string
-               "~@<~4:I~A ~A ~A ~A : ~A"
+               "~@<~4:I~A ~(~A~) ~A : ~A"
                "~@[~:@_requires { ~A }~]"
                "~@[~:@_~-2:Iensures  { ~A }~]"
                "~:@_~2:I="
@@ -153,7 +155,6 @@
                "~:>"
                )
               let-name
-              recursive?
               function-name
               (handle-typed-arguments typed-lambda-list)
               (handle-return-type typed-result-list)
