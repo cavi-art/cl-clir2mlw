@@ -292,13 +292,19 @@
       ;; No more stuff to process.
       (generate-module current-vu (nreverse passed-forms) :stream stream)))
 
-  (let ((content))
-    (with-open-file (clir-stream pathspec)
-      (setf content (loop for a = (read clir-stream nil)
-                       while a
-                       collect a)))
-    content))
 (defun read-clir-file (pathspec)
+  "Reads a CLIR file with symbols in the ir.mlw.formatter package, so
+that it can be easily converted to a WhyML output via
+`CLIR-FILE->MLW'."
+  (let ((prev-package *package*))
+    (unwind-protect
+         (let ((content))
+           (with-open-file (clir-stream pathspec)
+             (setf content (loop for a = (read clir-stream nil)
+                                 while a
+                                 collect a)))
+           content)
+      (setf *package* prev-package))))
 
 
 (defvar *clir-extension* ".clir")
