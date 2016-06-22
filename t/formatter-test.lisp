@@ -40,13 +40,17 @@
         (tstr2 (replace-all-whitespace str2)))
     (string-equal tstr1 tstr2)))
 
-(subtest "The comparing functions used through this test work as intended."
+(subtest "The ignoring-whitespace comparing functions used through this test work as intended."
   (plan 4)
-  (ok (equal-ignore-whitespace " a  a " "a a"))
+  (ok (equal-ignore-whitespace " a  a " "a a")
+      "Ignore spaces before and after the text, as well two spaces to one")
   (ok (equal-ignore-whitespace " a a
-" "a a"))
-  (ok (not (equal-ignore-whitespace " a  a " "aa")))
-  (ok (not (equal-ignore-whitespace "a" "b")))
+" "a a")
+      "Ignore newlines in the end")
+  (ok (not (equal-ignore-whitespace " a  a " "aa"))
+      "Do not treat the same two symbols with NO space between them")
+  (ok (not (equal-ignore-whitespace "a" "b"))
+      "Treat different symbols differently")
   (finalize)
 )
 
@@ -102,7 +106,7 @@ match b1 with
 
 (is (test/let-1)
     "let a : int = 1 in 2"
-    "A simple let is properly transformed."
+    "A simple let is properly transformed"
     :test #'equal-ignore-whitespace)
 
 (defun test/case-1 ()
@@ -112,7 +116,7 @@ match b1 with
                (default b))))
 
 (is (test/case-1) "match b with | 0 -> 0 | 1 -> 1 | _ -> b end"
-    "A case is transformed into a match. Handles default cases."
+    "A case is transformed into a match. Handles default cases"
     :test #'equal-ignore-whitespace)
 
 (defun test/let&case-1 ()
@@ -127,7 +131,7 @@ match b1 with
      | True -> 4
      | False -> 5
     end"
-    "A let with a case is transformed into a let with a match."
+    "A let with a case is transformed into a let with a match"
     :test #'equal-ignore-whitespace)
 
 (defun test/constructor/true ()
@@ -153,11 +157,11 @@ match b1 with
 
 (is (clir->mlw '(@ > b (the int 1)))
     "b > 1"
-    "A binary infix function is properly transformed.")
+    "A binary infix function is properly transformed")
 
 (is (clir->mlw '(@ > a b c d))
     "a > b > c > d"
-    "A binary infix function with multiple parameters is also properly handled.")
+    "A binary infix function with multiple parameters is also properly handled")
 
 
 (finalize)
