@@ -7,10 +7,33 @@ Usage
 =====
 
 You can build an executable file, and then use it as any non-lisp
-console binary. For building it, just type
+console binary.
+
+Before building
+---------------
+
+Before building the binary you need to get the project's dependencies.
+They are managed through QuickLisp and QLOT. The *best* way to get
+this working is to install [Roswell][ros] and install sbcl from there
+as your lisp implementation. Other configurations have not been
+tested.
+
+After you have Roswell, get the project's dependencies by typing:
 
 ```bash
-sbcl --load binary.lisp
+ros run -L sbcl -l init.lisp
+```
+
+That should get the dependencies and execute the tests.
+
+
+Building
+--------
+
+For building the binary, just type
+
+```bash
+ros run -L sbcl -l binary.lisp
 ```
 
 The binary's current usage is reproduced below. You can get this
@@ -49,8 +72,32 @@ CLIR2MLW uses qlot for managing dependencies, so you need quicklisp
 QuickLisp by hand, or have it managed by Roswell.
 
 ## Getting [qlot][qlot]
-### Way #1, using Quicklisp
-For that you need a working Quicklisp runtime.
+
+### Way #1, using Roswell
+
+[Roswell][ros] is a Common Lisp manager, installer and launcher. It's
+similar to Stack for Haskell or other utilities.
+
+It provides a nice interface for a lot of things.
+
+For example, Roswell automatically includes QuickLisp into the runtime
+by default, so there is no need to require it elsewhere.
+
+You can take a look at how to install roswell in [its wiki][ros-install].
+
+  [ros-install]: https://github.com/roswell/roswell/wiki/1.-Installation
+  
+Once you have Roswell installed, just type in your shell:
+
+```bash
+ros install qlot
+```
+
+[qlot]: https://github.com/fukamachi/qlot
+[ros]: https://github.com/roswell/roswell
+
+### Way #2, using Quicklisp
+For that you need a working QuickLisp runtime.
 If you do not have one, just type on your shell the following:
 
 ```bash
@@ -75,27 +122,6 @@ Now, open again your lisp environment and type:
 ```
 
 That's it.
-
-### Way #2, using Roswell
-
-[Roswell][ros] is a Common Lisp manager, installer and launcher. It's
-similar to Stack for Haskell or other utilities.
-
-It provides a nice interface for a lot of things.
-
-You can take a look at how to install roswell in [its wiki][ros-install].
-
-  [ros-install]: https://github.com/roswell/roswell/wiki/1.-Installation
-  
-Once you have Roswell installed, just type in your shell:
-
-```bash
-ros install qlot
-```
-
-[qlot]: https://github.com/fukamachi/qlot
-[ros]: https://github.com/roswell/roswell
-
 
 
 Contributing
