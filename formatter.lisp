@@ -241,7 +241,8 @@
           (clir->mlw rhs)
           (clir->mlw body)))
 (defun handle-tuple% (elements)
-  (declare (ignorable elements)))
+  (format nil "~@<(~{~A~^, ~})~:>"
+          (mapcar #'clir->mlw elements)))
 
 
 (defun clir->mlw (form)
