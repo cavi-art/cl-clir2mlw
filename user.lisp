@@ -21,7 +21,8 @@
 (defpackage :ir.mlw.user
   (:use :cl :ir.mlw.formatter)
   (:export #:clir-stream->mlw #:clir-batch->multifile-mlw #:clir-batch->mlw)
-  (:export #:*output-stream* #:*output-file-name-extension*))
+  (:export #:*output-stream* #:*output-file-name-extension*)
+  (:export #:*dump-binary*))
 (in-package :ir.mlw.user)
 
 (defvar *output-stream*)
