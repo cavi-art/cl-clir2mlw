@@ -72,10 +72,17 @@
                   (member op
                           '(+ - * / < <= >= = > % <>)
                           :test (lambda (a b) (string-equal (symbol-name a) (symbol-name b))))))
+           (maybe-downcase-symbol (symbol)
+             (when symbol
+               (let ((term-as-string (write-to-string symbol)))
+                 (if (equal term-as-string
+                            (string-upcase term-as-string))
+                     (string-downcase term-as-string)
+                     term-as-string))))
            (clir-term-to-string (term &optional recursive)
              (typecase term
-               (number term)
-               (symbol term)
+               (number (write-to-string term))
+               (symbol (maybe-downcase-symbol term))
                (string term)
                (cons (case (first term)
                        (quote (second term))
@@ -93,19 +100,21 @@
                                             (first p))
                                 (mapcar (lambda (x) (clir-term-to-string x t)) (rest p)))
                         (if (is-array-access (first p))
-                            (format nil "~A[~A]" (second p) (third p))
-                            (format nil "~A ~{~A~^ ~}" (first p) (mapcar (lambda (x) (clir-term-to-string x t)) (rest p)))))))
+                            (format nil "~(~A[~A]~)" (second p) (third p))
+                            (format nil "~(~A~) ~{~A~^ ~}" (first p) (mapcar (lambda (x) (clir-term-to-string x t)) (rest p)))))))
                (if recursive
                    (format nil "(~A)" predicate-str)
                    predicate-str))))
     (typecase formula
-      (symbol formula)
+      (symbol (maybe-downcase-symbol formula))
+      (number (write-to-string formula))
       (string formula)
-      (number formula)
       (cons (case (car formula)
-              (:forall (format nil "forall ~:{~A:~A~:^,~}. ~A" (second formula) (if (third formula)
-                                                                                    (clir-formula-to-string (third formula))
-                                                                                    "")))
+              (:forall (format nil "forall ~:{~(~A:~A~)~:^,~}. ~A"
+                               (second formula)
+                               (if (third formula)
+                                   (clir-formula-to-string (third formula))
+                                   "")))
               (-> (format nil "~{(~A)~^ -> ~}" (mapcar #'clir-formula-to-string (rest formula))))
               (and (format nil "(~{~A~^ /\\ ~})" (mapcar #'clir-formula-to-string (rest formula))))
               (or (format nil "~{~A~^ \\/ ~}" (mapcar #'clir-formula-to-string (rest formula))))
