@@ -60,7 +60,7 @@
                                          :element-type :default
                                          :if-exists :supersede
                                          :if-does-not-exist :create)
-          (clir-file->mlw (read-mlw-file input-file) :stream *output-stream*))
+          (clir-file->mlw (read-clir-file input-file) :stream *output-stream*))
         (when rest
           (clir-batch->multifile-mlw rest :auto-file-name nil)))))
 
@@ -72,7 +72,7 @@
 (defun clir-batch->mlw (file-list)
   (dolist (input-file file-list)
     (print-comment "BEGIN FILE ~A" input-file)
-    (clir-file->mlw (read-mlw-file input-file) :stream *output-stream*)
+    (clir-file->mlw (read-clir-file input-file) :stream *output-stream*)
     (print-comment "END FILE ~A" input-file)
     (format *output-stream* "~%~%")))
 

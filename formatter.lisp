@@ -37,7 +37,7 @@
 
   
   (:export #:clir->mlw #:clir-file->mlw #:generate-module #:*clir-extension*)
-  (:export #:read-mlw-file))
+  (:export #:read-clir-file))
 (cl:in-package :ir.mlw.formatter)
 
 (defun get-assertions (function-body)
@@ -292,13 +292,13 @@
       ;; No more stuff to process.
       (generate-module current-vu (nreverse passed-forms) :stream stream)))
 
-(defun read-mlw-file (pathspec)
   (let ((content))
     (with-open-file (clir-stream pathspec)
       (setf content (loop for a = (read clir-stream nil)
                        while a
                        collect a)))
     content))
+(defun read-clir-file (pathspec)
 
 
 (defvar *clir-extension* ".clir")
@@ -308,5 +308,5 @@
   (format nil "../test/~(~A~)~A" (symbol-name basename) extension))
 
 (defmacro easy-mlw (basename)
-  `(clir-file->mlw (read-mlw-file (easy-file ,basename))))
+  `(clir-file->mlw (read-clir-file (easy-file ,basename))))
 
