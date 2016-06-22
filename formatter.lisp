@@ -267,7 +267,7 @@
           (t (error "Unknown element ~S (probably because it is on package ~S)" (car form) (symbol-package (car form))))))
 
       ;; No more stuff to process.
-      (generate-module current-vu passed-forms :stream stream)))
+      (generate-module current-vu (nreverse passed-forms) :stream stream)))
 
 (defun read-mlw-file (pathspec)
   (let ((content))
