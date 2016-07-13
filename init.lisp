@@ -35,6 +35,7 @@ on your lisp environment to work.")))
 (load "clir2mlw.asd")
 
 ;; Check that dependencies are installed
+(ql:quickload 'prove)
 (qlot:install 'clir2mlw)
 (qlot:quickload 'clir2mlw)
 
