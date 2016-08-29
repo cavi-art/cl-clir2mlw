@@ -86,7 +86,7 @@
                           :test (lambda (a b) (string-equal (symbol-name a) (symbol-name b))))))
            (maybe-downcase-symbol (symbol)
              (when symbol
-               (let ((term-as-string (write-to-string symbol)))
+               (let ((term-as-string (symbol-name symbol)))
                  (if (equal term-as-string
                             (string-upcase term-as-string))
                      (string-downcase term-as-string)
