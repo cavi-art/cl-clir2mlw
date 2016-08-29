@@ -65,7 +65,7 @@
                                ((the bool false) (@ + b (the int 0)))))))
                (the bool true))))
 
-(plan 9)
+(plan 10)
 
 (is (test/letfun-1) "let rec f (a: (array int)) : int
     requires { true }
@@ -90,7 +90,7 @@ match b1 with
                       ((the bool true) b)
                       ((the bool false) (@ + b (the int 0))))))))
 
-(is (test/handle-fun-def-1) "let rec F (a: (array int)) (b: int) : int
+(is (test/handle-fun-def-1) "let rec f (a: (array int)) (b: int) : int
     requires { true }
     ensures  { (c) = (b) }
   =
@@ -163,5 +163,41 @@ match b1 with
     "a > b > c > d"
     "A binary infix function with multiple parameters is also properly handled")
 
+
+(subtest "Tuples"
+  (is (clir->mlw '(define f ((a int)) ((r1 int) (r2 int))
+                   (tuple a a)))
+      "let rec f (a: int) : (int,int)
+    =
+      (a, a)"
+      "Tuples are handled at a toplevel function definition"
+      :test #'equal-ignore-whitespace)
+
+  (is (clir->mlw '(define f ((a int)) ((r1 int) (r2 int))
+                   (letfun ((g ((ga1 int)) ((gr1 int) (gr2 int))
+                              (tuple a a)))
+                     (let ((b int) (c int)) (@ g a)
+                          (tuple b c)))))
+      "let rec f (a: int) : (int,int)
+  =
+      let rec g (ga1: int) : (int,int)
+  =
+    (a, a)
+  in
+  let (b,c) : (int, int) = g a in
+(b, c)" "Tuples are handled at a let left-hand side" :test #'equal-ignore-whitespace)
+
+(is
+ (clir->mlw '(define f ((a int)) ((r1 int) (r2 int))
+              (declare
+               (assertion
+                (precd (@ = a (the int 1)))
+                (postcd (@ = r1 r2))))
+              (tuple a a)))
+ "let rec f (a: int) : (int,int)
+    requires { (a) = (1) }
+    ensures  { let (r1,r2) : (int, int) = result in (r1) = (r2) }
+  =
+    (a, a)" :test #'equal-ignore-whitespace))
 
 (finalize)
