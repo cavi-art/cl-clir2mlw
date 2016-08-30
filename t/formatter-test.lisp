@@ -69,7 +69,7 @@
 
 (is (test/letfun-1) "let rec f (a: (array int)) : int
     requires { true }
-    ensures  { (c) = (b) }
+    ensures  { (c) = (result) }
   =
     let b1 : bool = b > 0 in
 match b1 with
@@ -92,7 +92,7 @@ match b1 with
 
 (is (test/handle-fun-def-1) "let rec f (a: (array int)) (b: int) : int
     requires { true }
-    ensures  { (c) = (b) }
+    ensures  { (result) = (b) }
   =
     let b1 : bool = b > 0 in
       match b1 with
@@ -210,6 +210,8 @@ match b1 with
     requires { (a) = (1) }
     ensures  { let (r1,r2) : (int, int) = result in (r1) = (r2) }
   =
-    (a, a)" :test #'equal-ignore-whitespace))
+(a, a)"
+  "Tuples are handled in a postcondition"
+  :test #'equal-ignore-whitespace))
 
 (finalize)
