@@ -4,11 +4,9 @@
   :author "Santiago Saavedra <s.saavedra@fdi.ucm.es>"
   :licence "AGPL3"
   :depends-on (:printv
-               :net.didierverna.clon)
+               :net.didierverna.clon
+               :clir-theories)
   :serial t
-  :components ((:file "../vcgen/packages")
-               (:file "../vcgen/theories/fetcher")
-               (:file "../vcgen/theories/defaultdb/database")
-               (:file "formatter")
+  :components ((:file "formatter")
                (:file "user" :depends-on ("formatter"))))
 
