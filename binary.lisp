@@ -71,7 +71,6 @@ requiring the appropriate commands onto the lisp image.
                  :fallback-value *output-file-name-extension*)))
 
 
-;;; TODO get the real version from ASDF
 (defun show-version ()
   (format t "CAVI-ART CLIR2MLW is part of the CAVIART-VCGEN suite.
 CAVIART-VCGEN is free software: you can redistribute it and/or modify
