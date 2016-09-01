@@ -1,6 +1,6 @@
 (defsystem "clir2mlw-test"
   :description "CLIR2MLW Test Suite"
-  :version "0.2.3"
+  :version "0.2.4"
   :author "Santiago Saavedra <s.saavedra@fdi.ucm.es>"
   :licence "Apache 2"
   :depends-on ("clir2mlw"
