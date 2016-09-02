@@ -68,7 +68,14 @@ requiring the appropriate commands onto the lisp image.
                :description "Send the output of all files to stdout.")
          (stropt :long-name "override-output-extension"
                  :description "Override the extension to save files with"
-                 :fallback-value *output-file-name-extension*)))
+                 :fallback-value *output-file-name-extension*))
+  (group (:header "Options controlling operations with the resulting file")
+         (switch :long-name "why3"
+                 :description (format nil "Automatically launch Why3 ~
+                 on the generated file(s). This will make ~
+                 interaction easier due to the fact that Why3 needs ~
+                 to be loaded with a special path for getting ~
+                 theories from our database."))))
 
 
 (defun show-version ()
@@ -96,17 +103,20 @@ Version: ~A" (asdf:component-version (asdf:find-system :clir2mlw))))
       (setf *output-file-name-extension* ext)
       (format *error-output* "~&Overriden automatic extension to ~A~%" *output-file-name-extension*)))
 
-  (in-package :ir.mlw.user)
-  
-  (let ((files (remainder)))
-    (unless files
-      (let ((*output-stream* *standard-output*))
-        (clir-stream->mlw *standard-input*)))
-    (when files
-      (if (getopt :short-name "s")
-          (let ((*output-stream* *standard-output*))
-            (clir-batch->mlw files))
-          (clir-batch->multifile-mlw files :auto-file-name (getopt :short-name "a")))))
+  (let ((launch-why3 (getopt :long-name "why3")))
+    (in-package :ir.mlw.user)
+
+    (let ((files (remainder)))
+      (unless files
+        (let ((*output-stream* *standard-output*))
+          (clir-stream->mlw *standard-input* :launch-why3 launch-why3)))
+      (when files
+        (if (getopt :short-name "s")
+            (let ((*output-stream* *standard-output*))
+              (clir-batch->mlw files))
+            (clir-batch->multifile-mlw files
+                                       :auto-file-name (getopt :short-name "a")
+                                       :launch-why3 launch-why3)))))
   (terpri)
   (exit))
 
