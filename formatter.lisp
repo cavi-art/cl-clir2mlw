@@ -31,7 +31,7 @@
   (:export :int)
   (:export :bool :true :false)
   (:export :*assume-verified* :*verify-only* :*external-functions* :*goal-set-hook* :*default-goal-set-hook*)
-  (:export :define :lettype :letvar :letconst :let :let* :letfun :case :default "@" "@@")
+  (:export :define :asserts :lettype :letvar :letconst :let :let* :letfun :case :default "@" "@@")
   ;;; End IR keywords
 
 
@@ -167,6 +167,14 @@
 (defun handle-function-definition% (&rest args)
   (apply #'handle-function-definition%% "let" args))
 
+(defun handle-asserts% (args)
+  (let ((formula (first args))
+        (body (second args)))
+    (format nil
+            "~@<~{assert { ~A };~:@_~:}~A~:>"
+            (mapcar #'clir-formula-to-string formula)
+            (clir->mlw body))))
+
 (defmacro with-assertions ((pre-post-list function-body) &body body)
   (let ((assertions (gensym)))
     `(let ((,assertions (get-assertions ,function-body)))
@@ -242,8 +250,7 @@
 (defun handle-infix% (name args)
   (format nil (format nil "~~{~~A~~^ ~(~A~) ~~}"
                       name)
-          (mapcar #'clir->mlw args)
-          ))
+          (mapcar #'clir->mlw args)))
 
 (defun handle-replacement-funcall% (name args)
   (flet ((is-array-access (fname)
@@ -290,7 +297,9 @@ WhyML representation."
             (case (apply #'handle-case% (cdr form)))
             (the (string-capitalize (format nil "~A" (third form))))
             (tuple (handle-tuple% (cdr form)))
-            (@ (apply #'handle-funcall% (cdr form)))))))
+            (asserts (handle-asserts% (cdr form)))
+            (@ (apply #'handle-funcall% (cdr form)))
+            (t (error "Unknown grammar node: ~S" (car form)))))))
 
 (defun imports->mlw (import-list)
   (format nil "~{~&use import ~A~}~%"
