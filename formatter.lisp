@@ -39,6 +39,9 @@
   (:export #:clir->mlw #:clir-file->mlw #:generate-module #:*clir-extension*)
   (:export #:read-clir-file))
 (cl:in-package :ir.mlw.formatter)
+(defparameter *indent-level* 1)
+(defparameter *indent-size* 4)
+
 
 (defun get-assertions (function-body)
   "Return the (possibly NIL) assertions in a FUNCTION-BODY."
@@ -284,6 +287,45 @@
   (format nil "~@<(~{~A~^, ~})~:>"
           (mapcar #'clir->mlw elements)))
 
+
+(defun indent% (text)
+  "Indents a text string.
+
+We use `*indent-size*' times `*indent-level*' (although the
+`*indent-level*' should probably be kept at one if you may be calling
+`indent%' recursively.
+
+Algorithm: We use two synthetic streams (`in' and `out'). We read
+lines from `in' until EOF. For each line read, we first output as many
+spaces as needed, and then the read line with the line terminator. The
+streams are closed and the resulting string from the output stream is
+returned as per `with-output-stream'."
+
+  (labels ((indent-stream (in out)
+             (let ((line (read-line in nil :eof)))
+               (unless (eq line :eof)
+                 (progn (print-spaces out)
+                        (write-line line out)
+                        (indent-stream in out)))))
+           (print-spaces (stream)
+             (let ((times (* *indent-level* *indent-size*)))
+               (dotimes (i times)
+                 (write-char #\  stream)))))
+    (with-output-to-string (out)
+      (with-input-from-string (in text)
+        (indent-stream in out)))))
+
+(defun clir->mlw%indent (body &key no-indent)
+  "clir->mlw modulo indentation. It enables indentation, unless the
+`NO-INDENT' paramter is set to exactly the next form of the body, or
+unless it is exactly `T'."
+  (if (or (eq no-indent
+              t)
+          (and (consp body)
+               (eq (first body)
+                   no-indent)))
+      (clir->mlw body)
+      (indent% (clir->mlw body))))
 
 (defun clir->mlw (form)
   "Transforms a single CLIR FORM (toplevel or not) into its equivalent
