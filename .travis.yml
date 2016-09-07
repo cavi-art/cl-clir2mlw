@@ -6,16 +6,16 @@ env:
     - ROSWELL_INSTALL_DIR="$HOME/roswell"
   matrix:
   # For some reason these dont work in travis with ros
-  # - LISP=allegro ARCH=x86_64
+  - LISP=allegro ARCH=x86
   # - LISP=ccl-bin ARCH=x86_64
-  # - LISP=cmu-bin ARCH=x86_64
+  - LISP=cmu-bin ARCH=x86
   - LISP=sbcl-bin ARCH=x86_64
 
-# matrix:
-#   allow_failures:
-#   - env: LISP=allegro ARCH=x86_64
-#   - env: LISP=ccl-bin ARCH=x86_64
-#   - env: LISP=cmu-bin ARCH=x86_64
+matrix:
+  allow_failures:
+  - env: LISP=allegro ARCH=x86_64
+  - env: LISP=ccl-bin ARCH=x86_64
+  - env: LISP=cmu-bin ARCH=x86_64
 
 addons:
   apt:
@@ -28,7 +28,7 @@ install:
   | sh
 - ros config set default.lisp ${LISP}
 - ros install qlot
-- ros run -- --version
+- ros run -- --version </dev/null
 script:
 - make test
 - make clir2mlw-tagged
