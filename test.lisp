@@ -20,21 +20,16 @@
 
 (cl:require "asdf")
 (cl:in-package :cl-user)
-(defpackage :ir.mlw.load
-  (:use :cl :asdf))
+(load #P"init.lisp")
+
 (cl:in-package :ir.mlw.load)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (unless (find-package :ql)
-    (error "ERROR: We need QuickLisp already installed ~
-on your lisp environment to work.")))
+(unless (find-package :uiop)
+  (ql:quickload :uiop :silent t))
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (ql:quickload :qlot))
+;;; When testing
+(load "clir2mlw-test.asd")
+(uiop:quit (if (prove:run 'clir2mlw-test)
+               0
+               1))
 
-(load "clir2mlw.asd")
-
-;; Check that dependencies are installed
-(ql:quickload 'prove)
-(qlot:install 'clir2mlw)
-(qlot:quickload 'clir2mlw)

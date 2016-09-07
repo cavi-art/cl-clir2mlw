@@ -2,6 +2,7 @@ clir2mlw
 =========
 CLIR2MLW is a parser which prints CLIR files as WhyML files.
 
+[![Build Status](https://travis-ci.org/cavi-art/cl-clir2mlw.svg?branch=master)](https://travis-ci.org/cavi-art/cl-clir2mlw)
 
 Usage
 =====
