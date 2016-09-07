@@ -17,6 +17,11 @@ env:
 #   - env: LISP=ccl-bin ARCH=x86_64
 #   - env: LISP=cmu-bin ARCH=x86_64
 
+addons:
+  apt:
+    packages:
+      - libc6-i386
+
 install:
 - mkdir -p "$ROSWELL_INSTALL_DIR"
 - curl -L https://raw.githubusercontent.com/roswell/roswell/release/scripts/install-for-ci.sh
