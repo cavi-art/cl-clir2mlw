@@ -177,7 +177,7 @@
       (typecase pattern
         (symbol pattern)
         (cons (case (car pattern)
-                (the (third pattern))
+                (the (string-capitalize (write-to-string (third pattern))))
                 (t (error "Unknown pattern ~S" pattern))))))
   )
 
@@ -189,7 +189,7 @@
 (defun handle-case% (discriminant &rest alternatives)
   (format nil
           "~@<~4:Imatch ~(~A~) with~
-           ~:{~:@_ | ~(~A~) -> ~A~}~:@_~-4:Iend~:>"
+           ~:{~:@_ | ~A -> ~A~}~:@_~-4:Iend~:>"
           discriminant
           (mapcar #'handle-case-alternative alternatives)))
 
