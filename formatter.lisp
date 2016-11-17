@@ -19,7 +19,7 @@
 ;;; along with CAVIART-VCGEN.  If not, see <http://www.gnu.org/licenses/>.
 
 (cl:defpackage :ir.mlw.formatter
-  (:use :cl)
+  (:use :cl :ir.vc.theories)
 
   ;;; Export IR keywords
   (:export :assertion :precd :postcd #:true #:false)
@@ -67,7 +67,18 @@
       (drop-decls (cdr body))
       body))
 
-(defun clir-formula-to-string (formula)
+(defun clir-formula-to-string (formula &key tupled)
+  (let ((inner (clir-formula-to-string% formula)))
+    (when inner
+      (if (cddr tupled)
+          (format nil
+                  "~@<~15Ilet ~A = ~A in ~:@_~A~:>"
+                  (handle-let-lhs (cdr tupled))
+                  (clir-formula-to-string (car tupled))
+                  (clir-formula-to-string formula))
+          (clir-formula-to-string% formula)))))
+
+(defun clir-formula-to-string% (formula)
   (labels ((is-infix (op)
              (and (symbolp op)
                   (member op
@@ -169,7 +180,8 @@
               (handle-typed-arguments typed-lambda-list)
               (handle-return-type typed-result-list)
               (clir-formula-to-string pre)
-              (clir-formula-to-string post)
+              (clir-formula-to-string post :tupled (cons '#:result ;; The name of the "result" function
+                                                         typed-result-list))
               (clir->mlw (first (drop-decls body)))))))
 
 
@@ -241,6 +253,7 @@
           (handle-let-lhs lhs)
           (clir->mlw rhs)
           (clir->mlw body)))
+
 (defun handle-tuple% (elements)
   (format nil "~@<(~{~A~^, ~})~:>"
           (mapcar #'clir->mlw elements)))
