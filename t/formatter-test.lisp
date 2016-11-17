@@ -144,14 +144,14 @@ match b1 with
               (clir->mlw '(case b
                            ((the bool true) (the bool true))
                            ((the bool false) (the bool false))))))
-    (ok (not (ppcre:scan "true -> true"
+    (ok (not (ppcre:scan "true"
                          (test/constructor/case/true)))
         "We do not see any lowercase constructors in the case")
     (like (test/constructor/case/true)
-          "True -> True"
+          "True"
           "We see a proper capitalized constructor in a two-fold case")
     (like (test/constructor/case/true)
-          "False -> False"
+          "False"
           "We see a proper capitalized constructor in a two-fold case")))
 
 
