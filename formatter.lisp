@@ -36,7 +36,7 @@
 
 
   
-  (:export #:clir->mlw #:clir-file->mlw #:generate-theory #:*clir-extension*)
+  (:export #:clir->mlw #:clir-file->mlw #:generate-module #:*clir-extension*)
   (:export #:read-mlw-file))
 (cl:in-package :ir.mlw.formatter)
 
@@ -238,7 +238,7 @@
   (format nil "~{~&use import ~A~}~%"
           import-list))
 
-(defun generate-theory (verification-unit parsed-forms &key stream)
+(defun generate-module (verification-unit parsed-forms &key stream)
   (let ((theory-name (first verification-unit))
         (imports (imports->mlw '("int.Int"
                                  "ref.Ref"
@@ -247,7 +247,7 @@
                                  "array.ArraySwap"
                                  "array.ArrayPermut"
                                  "array.ArrayEq"))))
-    (format stream "theory ~A ~&~A~&~{~A~%~}~&end~%"
+    (format stream "module ~A ~&~A~&~{~A~%~}~&end~%"
             theory-name
             imports
             parsed-forms)))
@@ -267,7 +267,7 @@
           (t (error "Unknown element ~S (probably because it is on package ~S)" (car form) (symbol-package (car form))))))
 
       ;; No more stuff to process.
-      (generate-theory current-vu passed-forms :stream stream)))
+      (generate-module current-vu passed-forms :stream stream)))
 
 (defun read-mlw-file (pathspec)
   (let ((content))
