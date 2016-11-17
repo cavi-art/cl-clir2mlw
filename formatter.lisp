@@ -300,13 +300,11 @@ WhyML representation."
   "Generates a WhyML module from a VERIFICATION-UNIT and a list of
 PARSED-FORMS, outputing the result in STREAM."
   (let ((theory-name (first verification-unit))
-        (imports (imports->mlw '("int.Int"
-                                 "ref.Ref"
-                                 "array.Array"
-                                 "array.IntArraySorted"
-                                 "array.ArraySwap"
-                                 "array.ArrayPermut"
-                                 "array.ArrayEq"))))
+        (imports (imports->mlw (remove-if-not
+                                #'identity
+                                (mapcar
+                                 #'find-import-in-theory-db
+                                 (:printv (getf (cdr verification-unit) :uses)))))))
     (format stream "module ~A ~&~A~&~{~A~%~}~&end~%"
             theory-name
             imports
