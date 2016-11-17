@@ -41,6 +41,7 @@
 (cl:in-package :ir.mlw.formatter)
 
 (defun get-assertions (function-body)
+  "Return the (possibly NIL) assertions in a FUNCTION-BODY."
   (let* ((d (cdr (assoc 'declare function-body)))
          (a (cdr (assoc 'assertion d)))
          (pre (second (assoc 'precd a)))
@@ -246,6 +247,8 @@
 
 
 (defun clir->mlw (form)
+  "Transforms a single CLIR FORM (toplevel or not) into its equivalent
+WhyML representation."
   (typecase form
     (symbol (format nil "~(~A~)" form))
     (cons (case (car form)
@@ -262,6 +265,8 @@
           import-list))
 
 (defun generate-module (verification-unit parsed-forms &key stream)
+  "Generates a WhyML module from a VERIFICATION-UNIT and a list of
+PARSED-FORMS, outputing the result in STREAM."
   (let ((theory-name (first verification-unit))
         (imports (imports->mlw '("int.Int"
                                  "ref.Ref"
@@ -276,6 +281,8 @@
             parsed-forms)))
 
 (defun clir-file->mlw (form-list &key current-vu passed-forms stream)
+  "Transforms a list of toplevel CLIR forms into its WhyML equivalent
+file."
   (if form-list
       (let ((form (first form-list)))
         (case (car form)
