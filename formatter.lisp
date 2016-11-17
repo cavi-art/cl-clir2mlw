@@ -122,7 +122,7 @@
       (number (write-to-string formula))
       (string formula)
       (cons (case (car formula)
-              (:forall (format nil "forall ~:{~(~A:~A~)~:^,~}. ~A"
+              (forall (format nil "forall ~:{~(~A:~A~)~:^,~}. ~A"
                                (second formula)
                                (if (third formula)
                                    (clir-formula-to-string (third formula))
