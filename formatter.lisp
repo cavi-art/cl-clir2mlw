@@ -199,7 +199,7 @@
           '(< <= > >= = == != <> and or /\ \/ + - * /)))
 
 (defun handle-infix% (name args)
-  (format nil (format nil "~~{~~(~~A~~)~~^ ~(~A~) ~~}"
+  (format nil (format nil "~~{~~A~~^ ~(~A~) ~~}"
                       name)
           (mapcar #'clir->mlw args)
           ))
