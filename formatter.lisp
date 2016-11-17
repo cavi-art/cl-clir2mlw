@@ -304,7 +304,7 @@ PARSED-FORMS, outputing the result in STREAM."
                                 #'identity
                                 (mapcar
                                  #'find-import-in-theory-db
-                                 (:printv (getf (cdr verification-unit) :uses)))))))
+                                 (getf (cdr verification-unit) :uses))))))
     (format stream "module ~A ~&~A~&~{~A~%~}~&end~%"
             theory-name
             imports
