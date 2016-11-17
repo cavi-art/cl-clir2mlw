@@ -1,20 +1,20 @@
 ("quicklisp" .
  (:class qlot.source.ql:source-ql-all
   :initargs (:project-name "quicklisp" :%version :latest)
-  :version "2016-05-31"))
+  :version "2016-08-25"))
 ("printv" .
  (:class qlot.source.ql:source-ql
   :initargs (:project-name "printv" :%version :latest)
-  :version "ql-2016-05-31"))
+  :version "ql-2016-08-25"))
 ("prove" .
  (:class qlot.source.ql:source-ql
   :initargs (:project-name "prove" :%version :latest)
-  :version "ql-2016-05-31"))
+  :version "ql-2016-08-25"))
 ("cl-ppcre" .
  (:class qlot.source.ql:source-ql
   :initargs (:project-name "cl-ppcre" :%version :latest)
-  :version "ql-2016-05-31"))
+  :version "ql-2016-08-25"))
 ("cl-clon" .
  (:class qlot.source.ql:source-ql
   :initargs (:project-name "cl-clon" :%version :latest)
-  :version "ql-2016-05-31"))
+  :version "ql-2016-08-25"))
