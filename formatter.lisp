@@ -71,12 +71,30 @@
   (let ((inner (clir-formula-to-string% formula)))
     (when inner
       (if (cddr tupled)
+                                        ; More than one result
+                                        ; parameter: introduce a
+                                        ; destructuring let
           (format nil
                   "~@<~15Ilet ~A = ~A in ~:@_~A~:>"
                   (handle-let-lhs (cdr tupled))
                   (clir-formula-to-string (car tupled))
                   (clir-formula-to-string formula))
-          (clir-formula-to-string% formula)))))
+
+                                        ; Else we need to replace our
+                                        ; parameter by "result", as
+                                        ; mlw wants it.
+          (clir-formula-to-string% (replace-symbol formula (caadr tupled) (car tupled)))))))
+
+(defun replace-symbol (formula original-symbol replacement-symbol)
+  (typecase formula
+    ((or nil number) formula)
+    ((or symbol string) (or (and (equal formula original-symbol)
+                                 replacement-symbol)
+                            formula))
+    (cons (cons (replace-symbol (car formula) original-symbol replacement-symbol)
+                (replace-symbol (cdr formula) original-symbol replacement-symbol)))
+    (t (error "Unknown formula type for formula: ~S" formula))))
+
 
 (defun clir-formula-to-string% (formula)
   (labels ((is-infix (op)
