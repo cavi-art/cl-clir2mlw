@@ -2,3 +2,4 @@ ql printv :latest
 ql prove :latest
 ql cl-ppcre :latest
 ql cl-clon :latest
+github clir-theories cavi-art/clir-theories :branch master
