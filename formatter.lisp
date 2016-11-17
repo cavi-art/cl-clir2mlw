@@ -164,7 +164,7 @@
     (format nil
             "~@<~4:I~{~A~^~:@_~}~:@_in~:@_~A~:>"
             (cons first-function rest-functions)
-            (clir->mlw body))))
+            (clir->mlw%indent body))))
 
 
 (defun handle-function-definition% (&rest args)
@@ -201,7 +201,7 @@
                "~@<~4:I~A ~(~A~) ~A : ~A"
                "~@[~:@_requires { ~A }~]"
                "~@[~:@_~-2:Iensures  { ~A }~]"
-               "~:@_~2:I="
+               "~:@_~-4:I="
                "~:@_~A"
                "~:>"
                )
@@ -212,7 +212,7 @@
               (clir-formula-to-string pre)
               (clir-formula-to-string post :tupled (cons '#:result ;; The name of the "result" function
                                                          typed-result-list))
-              (clir->mlw (first (drop-decls body)))))))
+              (clir->mlw%indent (first (drop-decls body)))))))
 
 
 (defun handle-let-lhs (lhs)
@@ -237,12 +237,12 @@
 (defun handle-case-alternative (alt)
   (destructuring-bind (pattern body) alt
     (list (handle-case-pattern pattern)
-          (clir->mlw body))))
+          (clir->mlw%indent body))))
 
 (defun handle-case% (discriminant &rest alternatives)
   (format nil
-          "~@<~4:Imatch ~(~A~) with~
-           ~:{~:@_ | ~A -> ~A~}~:@_~-4:Iend~:>"
+          "~@<match ~(~A~) with~
+           ~:{~:@_  | ~A -> ~:@_~A~}~:@_~-4:Iend~:>"
           discriminant
           (mapcar #'handle-case-alternative alternatives)))
 
