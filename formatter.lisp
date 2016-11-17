@@ -79,7 +79,7 @@
                (string term)
                (cons (case (first term)
                        (quote (second term))
-                       (the (third term))
+                       (the (string-capitalize (write-to-string (third term))))
                        (@ (apply-predicate (rest term) recursive))
                        (t (error "Term ~S not understood." term))))
                (t (error "Term ~S not understood." term))))
@@ -230,7 +230,7 @@
             (letfun (apply #'handle-function-definitions% (cdr form)))
             (let (apply #'handle-let% (cdr form)))
             (case (apply #'handle-case% (cdr form)))
-            (the (third form))
+            (the (string-capitalize (format nil "~A" (third form))))
             (tuple (handle-tuple% (cdr form)))
             (@ (apply #'handle-funcall% (cdr form)))))))
 
