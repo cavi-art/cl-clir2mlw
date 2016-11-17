@@ -19,7 +19,7 @@
 ;;; along with CAVIART-VCGEN.  If not, see <http://www.gnu.org/licenses/>.
 
 (defpackage :ir.mlw.user
-  (:use :cl :ir.mlw.formatter)
+  (:use :cl :ir.mlw.formatter :ir.vc.theories)
   (:export #:clir-stream->mlw #:clir-batch->multifile-mlw #:clir-batch->mlw)
   (:export #:*output-stream* #:*output-file-name-extension*)
   (:export #:*dump-binary*))
@@ -37,13 +37,13 @@
      (make-pathname :name (concatenate 'string basename (concatenate 'string "." *output-file-name-extension*)) :type :unspecific))))
 
 
-(defun clir-stream->mlw (clir-stream &key (stream *standard-output*))
+(defun clir-stream->mlw (clir-stream &key (stream *standard-output*) launch-why3)
   (clir-file->mlw (loop for a = (read clir-stream nil)
                      while a
                      collect a)
                   :stream stream))
 
-(defun clir-batch->multifile-mlw (file-list &key (auto-file-name t))
+(defun clir-batch->multifile-mlw (file-list &key (auto-file-name t) launch-why3)
   "If auto-file-name is nil, file-list must be an evenly-numbered
   list, whose odd elements are clir files and the even elements are
   the paths to the wanted mlw files."
@@ -51,7 +51,8 @@
       (clir-batch->multifile-mlw (loop for file in file-list
                                     collecting file
                                     collecting (auto-file-name-for file))
-                                 :auto-file-name nil)
+                                 :auto-file-name nil
+                                 :launch-why3 launch-why3)
 
       (destructuring-bind (input-file output-file . rest) file-list
         (format *error-output* "Processing ~A and saving in ~A ~%" input-file output-file)
@@ -60,9 +61,31 @@
                                          :element-type :default
                                          :if-exists :supersede
                                          :if-does-not-exist :create)
-          (clir-file->mlw (read-clir-file input-file) :stream *output-stream*))
+          (clir-file->mlw (read-clir-file input-file)
+                          :stream *output-stream*))
+        (when launch-why3
+          (why3-launch-ide (truename output-file)))
         (when rest
           (clir-batch->multifile-mlw rest :auto-file-name nil)))))
+
+
+(defvar *why3-parameters* nil)
+(defvar *why3-executable* "why3")
+
+(defun why3-launch-ide (prover-file)
+  (asdf::run-program (:printv "Launching IDE at..."
+                              (append (list *why3-executable* "ide")
+                                      (why3-parameters)
+                                      (list (namestring prover-file))))))
+(defun why3-parameters ()
+  (append
+   *why3-parameters*
+   (apply #'append
+          (loop for db in *enabled-theory-databases*
+             collecting
+               (list "-L" (princ-to-string (get-theory-directory db)))))))
+
+
 
 (defun print-comment (format-string &rest args)
   (format *output-stream* "~&(******************************************************)~%")
