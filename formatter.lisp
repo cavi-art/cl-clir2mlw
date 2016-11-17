@@ -170,7 +170,8 @@
 (defmacro with-assertions ((pre-post-list function-body) &body body)
   (let ((assertions (gensym)))
     `(let ((,assertions (get-assertions ,function-body)))
-       (if (car ,assertions)
+       (if (or (car ,assertions)
+               (cdr ,assertions))
          (destructuring-bind ,pre-post-list ,assertions
            ,@body)
          (let ,pre-post-list
