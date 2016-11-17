@@ -36,7 +36,8 @@
 
 
   
-  (:export #:clir->mlw #:clir-file->mlw #:generate-theory #:*clir-extension*))
+  (:export #:clir->mlw #:clir-file->mlw #:generate-theory #:*clir-extension*)
+  (:export #:read-mlw-file))
 (cl:in-package :ir.mlw.formatter)
 
 (defun get-assertions (function-body)
@@ -121,9 +122,7 @@
     (format nil
             "~@<~4:I~{~(~A~)~^~:@_~}~:@_in~:@_~A~:>"
             (cons first-function rest-functions)
-            (:printv (clir->mlw body)))))
-
-(printv:enable-printv-output *standard-output*)
+            (clir->mlw body))))
 
 
 (defun handle-function-definition% (&rest args)
@@ -199,9 +198,9 @@
           '(< <= > >= = == != <> and or /\ \/ + - * /)))
 
 (defun handle-infix% (name args)
-  (format nil (:printv (format nil "~~{~~(~~A~~)~~^ ~(~A~) ~~}"
-                               name))
-          (:printv (mapcar #'clir->mlw args))
+  (format nil (format nil "~~{~~(~~A~~)~~^ ~(~A~) ~~}"
+                      name)
+          (mapcar #'clir->mlw args)
           ))
 
 (defun handle-funcall% (name &rest args)
@@ -248,7 +247,7 @@
                                  "array.ArraySwap"
                                  "array.ArrayPermut"
                                  "array.ArrayEq"))))
-    (format stream "theory ~A ~&~A~&~{~A~%~}~&end"
+    (format stream "theory ~A ~&~A~&~{~A~%~}~&end~%"
             theory-name
             imports
             parsed-forms)))
@@ -264,11 +263,19 @@
           (define (clir-file->mlw (cdr form-list)
                                   :current-vu current-vu
                                   :passed-forms (cons (clir->mlw form) passed-forms)
-                                  :stream stream))))
+                                  :stream stream))
+          (t (error "Unknown element ~S (probably because it is on package ~S)" (car form) (symbol-package (car form))))))
 
       ;; No more stuff to process.
       (generate-theory current-vu passed-forms :stream stream)))
 
+(defun read-mlw-file (pathspec)
+  (let ((content))
+    (with-open-file (clir-stream pathspec)
+      (setf content (loop for a = (read clir-stream nil)
+                       while a
+                       collect a)))
+    content))
 
 
 (defvar *clir-extension* ".clir")
@@ -278,15 +285,5 @@
   (format nil "../test/~(~A~)~A" (symbol-name basename) extension))
 
 (defmacro easy-mlw (basename)
-  (let ((content (gensym)))
-    `(let ((,content))
-       (with-open-file (clir-stream (easy-file ,basename))
-         (setf ,content (loop for a = (read clir-stream nil)
-                          while a
-                          collect a)))
-       
-       (clir-file->mlw ,content))))
-
-
-;; (easy-mlw qsort)
+  `(clir-file->mlw (read-mlw-file (easy-file ,basename))))
 

@@ -1,3 +1,4 @@
 ql printv :latest
 ql prove :latest
 ql cl-ppcre :latest
+ql cl-clon :latest
