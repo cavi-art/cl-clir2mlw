@@ -43,6 +43,7 @@ requiring the appropriate commands onto the lisp image.
 
   (:export :main))
 (in-package :ir.mlw.binary)
+(defvar *dump-binary* t)
 
 ;;; Synopsis for the command line
 (defsynopsis (:postfix "FILE ...")
@@ -128,4 +129,5 @@ Version: ~A" (asdf:component-version (asdf:find-system :clir2mlw))))
   (with-simple-restart (abort "Exit the program.")
     (trap-all (main))))
 
-(dump "clir2mlw" main-launcher)
+(when *dump-binary*
+  (dump "clir2mlw" main-launcher))
