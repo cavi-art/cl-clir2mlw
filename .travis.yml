@@ -1,0 +1,38 @@
+language: lisp
+env:
+  global:
+    - CC=cc
+    - PATH="$HOME/roswell/bin:$PATH"
+    - ROSWELL_INSTALL_DIR="$HOME/roswell"
+  matrix:
+  # For some reason these dont work in travis with ros
+  # - LISP=allegro ARCH=x86_64
+  # - LISP=ccl-bin ARCH=x86_64
+  # - LISP=cmu-bin ARCH=x86_64
+  - LISP=sbcl-bin ARCH=x86_64
+
+# matrix:
+#   allow_failures:
+#   - env: LISP=allegro ARCH=x86_64
+#   - env: LISP=ccl-bin ARCH=x86_64
+#   - env: LISP=cmu-bin ARCH=x86_64
+
+install:
+- mkdir -p "$ROSWELL_INSTALL_DIR"
+- curl -L https://raw.githubusercontent.com/roswell/roswell/release/scripts/install-for-ci.sh
+  | sh
+- ros config set default.lisp ${LISP}
+- ros install qlot
+- ros run -- --version
+script:
+- make test
+- make clir2mlw-tagged
+deploy:
+  provider: releases
+  api_key:
+    secure: gRZI17l7+Lox/OfUtr27oRFWgy4itP/BVTL4YYE0xl4YuN4s72lNJLPBzhpprBEnRsZ300xTLwl/nn0YXab0fKB+Ro9EeUkKTtl2u9ZMQFI3bI9WdwsTIGUu9eLaHphF9MCNxwIILUsM8W4c+Cr7lvufHjTv5Rvt4Wqq1/uwF2KxSm15s8Cp848fwmhqLvSHRWLsrmfASVXi5aiEm0sJOuOess46b5tTHTX4GUY4NMUgE6rwGYIXNq8vHVNUflkL7DzqhAERzgE8XG0kiRe2pW7Bv4s/c8s27Sh3zysf3rg2dC6Ry4jOoNhcHlC10/8Fi/KGIYwn7hLrHkE64wHbGDCbvcYS4Kl5L5s8ufDkM+sjEC040vRQCzvlXx3gQuiWyhYTNyyzULfzzwpjzf6tQVLKndQBqGkcURZv79ikjPKKYyYndULQ6rJqNCQchZ4AYgriBEwAAFVB3Wd6k//nw0B4mctPBT6rcN/i2APQvX4vtHEJab5/vulx6kXb6gheiA/9XRf3vWYQzooOeF7DahMJoACcSPWNJDJbBB8ncTUTm7PMidU3/rI3+wcr5MR8d+5cCnG0CLLqSPavPd2VKgp7cYpd1sGb9qFBg8veOmPa4hCTmfIxVQdfvyMmtqYVN8dVUHTimZxnqhJuF/NTfu8Y3jK1nnpLPrAgJlt6vh0=
+  file: clir2mlw-linux-${LISP}-${ARCH}
+  skip_cleanup: true
+  on:
+    repo: cavi-art/cl-clir2mlw
+    tags: true
