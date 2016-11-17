@@ -213,13 +213,25 @@
           (mapcar #'clir->mlw args)
           ))
 
+(defun handle-replacement-funcall% (name args)
+  (flet ((is-array-access (fname)
+           (string-equal (symbol-name fname)
+                         :get)))
+    (cond
+      ((is-array-access name)
+       (format nil "~(~A[~A]~)"
+               (first args)
+               (second args)))
+      (t nil))))
+
 (defun handle-funcall% (name &rest args)
   (if (is-infix name)
       (handle-infix% name args)
-      (format nil
-              "~(~A~) ~{~(~A~)~^ ~}"
-              name
-              (mapcar #'clir->mlw args))))
+      (or (handle-replacement-funcall% name args)
+          (format nil
+                  "~(~A~) ~{~A~^ ~}"
+                  name
+                  (mapcar #'clir->mlw args)))))
 
 
 (defun handle-let% (lhs rhs body)
