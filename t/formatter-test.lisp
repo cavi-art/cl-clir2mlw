@@ -61,7 +61,7 @@
                                ((the bool false) (@ + b (the int 0)))))))
                (the bool true))))
 
-(plan 7)
+(plan 9)
 
 (is (test/letfun-1) "let rec f (a: (array int)) : int
     requires { true }
@@ -69,8 +69,8 @@
   =
     let b1 : bool = b > 0 in
 match b1 with
-     | true -> b
-     | false -> b + 0
+     | True -> b
+     | False -> b + 0
     end
     in
     true" "A letfun should be properly parsed" :test #'equal-ignore-whitespace)
@@ -92,8 +92,8 @@ match b1 with
   =
     let b1 : bool = b > 0 in
       match b1 with
-       | true -> b
-     | false -> b + 0
+       | True -> b
+     | False -> b + 0
     end" "A toplevel function definition should be properly transformed into a let rec construct" :test #'equal-ignore-whitespace)
 
 (defun test/let-1 ()
@@ -122,13 +122,33 @@ match b1 with
                  ((the bool false) (the int 5))))))
 
 (is (test/let&case-1)
-    "let a : int = true in
+    "let a : int = True in
     match a with
-     | true -> 4
-     | false -> 5
+     | True -> 4
+     | False -> 5
     end"
     "A let with a case is transformed into a let with a match."
     :test #'equal-ignore-whitespace)
+
+(defun test/constructor/true ()
+  (clir->mlw '(the bool true)))
+
+(is (test/constructor/true) "True")
+
+(subtest "Constructors work in a case expression"
+  (labels ((test/constructor/case/true ()
+              (clir->mlw '(case b
+                           ((the bool true) (the bool true))
+                           ((the bool false) (the bool false))))))
+    (ok (not (ppcre:scan "true -> true"
+                         (test/constructor/case/true)))
+        "We do not see any lowercase constructors in the case")
+    (like (test/constructor/case/true)
+          "True -> True"
+          "We see a proper capitalized constructor in a two-fold case")
+    (like (test/constructor/case/true)
+          "False -> False"
+          "We see a proper capitalized constructor in a two-fold case")))
 
 
 (is (clir->mlw '(@ > b (the int 1)))
