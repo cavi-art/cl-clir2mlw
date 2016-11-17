@@ -65,7 +65,7 @@
                                ((the bool false) (@ + b (the int 0)))))))
                (the bool true))))
 
-(plan 10)
+(plan 11)
 
 (is (test/letfun-1) "let rec f (a: (array int)) : int
     requires { true }
@@ -163,6 +163,18 @@ match b1 with
     "a > b > c > d"
     "A binary infix function with multiple parameters is also properly handled")
 
+(is (clir->mlw '(define f ((a int)) ((b int))
+                 (declare
+                  (assertion
+                   (postcd (@ = b a))))
+                 a))
+    "let rec f (a: int) : int
+    ensures { (result) = (a) }
+    =
+      a"
+    "Postconditions use the result keyword in the MLW result, replacing symbols in the original formula"
+    :test #'equal-ignore-whitespace)
+
 
 (subtest "Tuples"
   (is (clir->mlw '(define f ((a int)) ((r1 int) (r2 int))
@@ -187,14 +199,14 @@ match b1 with
   let (b,c) : (int, int) = g a in
 (b, c)" "Tuples are handled at a let left-hand side" :test #'equal-ignore-whitespace)
 
-(is
- (clir->mlw '(define f ((a int)) ((r1 int) (r2 int))
-              (declare
-               (assertion
-                (precd (@ = a (the int 1)))
-                (postcd (@ = r1 r2))))
-              (tuple a a)))
- "let rec f (a: int) : (int,int)
+  (is
+   (clir->mlw '(define f ((a int)) ((r1 int) (r2 int))
+                (declare
+                 (assertion
+                  (precd (@ = a (the int 1)))
+                  (postcd (@ = r1 r2))))
+                (tuple a a)))
+   "let rec f (a: int) : (int,int)
     requires { (a) = (1) }
     ensures  { let (r1,r2) : (int, int) = result in (r1) = (r2) }
   =
